@@ -1,0 +1,1 @@
+# Reduced-channel-CR-stimulation-of-LIF-STDP-neuronal-network-model
