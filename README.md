@@ -1,3 +1,5 @@
 # Reduced-channel-CR-stimulation-of-LIF-STDP-neuronal-network-model
 
+Contains simulation codes for the spontaneous dynamics of and the effect of Coordinated Reset Stimulation on plastic neuronal network formed by Leaky Integrate and Fire neurons with distance-dependent connectivity subject to Spike-Timing-Dependent Plasticity.
+
 The "LIF-STDP-Spontaneous.cc" starts the network in a random state and allows it to settle into a steady state. It then saves the steady state data, e.g., steady state firing rates, synaptic weights, etc. in a file. This file can then be used in "ReducedCR-LIF-STDP.cc" to stimulate the steady state network and record the network-average measures in a separate data file to observe the changes in the network state pre, during, and post stimulation. An example steady state file named, "Steady_state_STDP(a=1.4,Wmean=0.9,k=8,beta=0.100)largeNet.dat" is provided in this repository. The network in this data file is strongly synchronized in its steady state. Using it in "ReducedCR-LIF-STDP.cc" would desynchronize it in just one minute of stimulation. 
