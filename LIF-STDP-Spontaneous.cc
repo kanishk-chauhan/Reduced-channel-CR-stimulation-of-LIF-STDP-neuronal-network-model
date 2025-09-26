@@ -120,7 +120,7 @@ int main(int argc, char* argv[]){
     char filename3[500] = {};
     char filename4[500] = {};
     char filename5[500] = {};
-    string Address = "/Users/chauhank/Documents/InF_2025/GitHub folder/";//"/path/to/your/directory/";
+    string Address = "/path/to/your/directory/";
 
     snprintf(filename1,sizeof(filename1),"STDP(a=%.1f,Wmean=%.1f,k=8,beta=%.3f)largeNet.dat",a,W_mean,p);
     snprintf(filename5,sizeof(filename5),"Steady_state_STDP(a=%.1f,Wmean=%.1f,k=8,beta=%.3f)largeNet.dat",a,W_mean,p);
