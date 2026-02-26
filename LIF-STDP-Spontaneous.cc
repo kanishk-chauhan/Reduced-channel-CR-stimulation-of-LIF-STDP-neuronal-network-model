@@ -166,6 +166,7 @@ int main(int argc, char* argv[]){
     ep = eta;
     ed = a*eta/tr; // As in Kromer and Tass's PRR 2020 Paper (Long-lasting desynchronization by decoupling stimulus)
     W_sd = 0.05; // standard deviation of weights
+    if (W_mean > 0.95) W_sd = 0.0;
     win_size = 10; // 5 on the right and 5 on the left
     if(win_size%2==0) win_size+=1; // to keep the window size odd
     pi = 4*atan(1);
@@ -558,11 +559,16 @@ vector<vector<double> > Adjacency_Matrix(int N, double p){ //Erdos Renyi random 
 
 vector<vector<double> > Dist_Dep_Adjacency_Matrix(int N, double p, vector<vector<double> > Zd){
     double ncon=0;
-    double rnd;
+    double rnd, seed_;
     vector<double> zeros(N,0);
     vector<vector<double> > matrix(N,zeros);
+    seed_ = 100;
+    mt19937 rnd_gen(seed_);
+    vector<int> neuron_indices(N);
+    iota(neuron_indices.begin(), neuron_indices.end(), 0);
     while (p-ncon/N/(N-1) > 0.001){ 
-        for (int i = 0; i < N; i++){
+        shuffle(neuron_indices.begin(), neuron_indices.end(), rnd_gen);
+        for (int i : neuron_indices){
             for (int j = 0; j < N; j++){
                 rnd = 0.0001*(rand()%10001);
                 if (i!=j && matrix[i][j] == 0 && rnd < p*Zd[i][j]){
