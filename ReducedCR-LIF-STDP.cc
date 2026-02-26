@@ -647,13 +647,16 @@ vector<vector<double> > RVS_CR(Ran &random,double window_size, double Fs, double
     vector<double> zeros(nt,0);
     vector<vector<double> > Stimulus(Nsites,zeros);
 
+    random_device rd;
+    mt19937 rnd_gen(rd());
+
     n_cycles = Fs*window_size/1e3; // because window_size is in ms
     i_cycle = 0;
     vector<int> pulse_order(Nsites,0);
     for (int ii = 0; ii < Nsites; ii++) pulse_order[ii] = ii;
 
     while (i_cycle < n_cycles-1){
-        shuffle(pulse_order.begin(),pulse_order.end(),default_random_engine(0));
+        shuffle(pulse_order.begin(),pulse_order.end(),rnd_gen);
         for (int ii = 0; ii < Nsites; ii++){
             i_pulse = i_cycle*nt_cycle + pulse_order[ii]*nt_cycle/Nsites;
             for (int jj = 0; jj < n_pulses; jj++){ 
@@ -693,19 +696,26 @@ vector<vector<double> > jSeqCR(Ran &random,double window_size, double Fs, double
     vector<double> zeros(nt,0);
     vector<vector<double> > Stimulus(Nsites,zeros);
 
+    random_device rd;
+    mt19937 rnd_gen(rd());
+
     n_cycles = Fs*window_size/1e3; // because window_size is in ms
     i_cycle = 0;
     vector<double> mask_it(Nsites,0);
     for (int ii = 0; ii < Nsites; ii++) mask_it[ii] = ii; // mask_it element = 0 would mask the corresponding electrode/channel (i.e., make its current zero)
 
-    while (i_cycle < n_cycles-1){
-        shuffle(mask_it.begin(), mask_it.end(),default_random_engine(0)); // to randomly mask electrodes/channels
+    while (i_cycle < n_cycles){
+        shuffle(mask_it.begin(), mask_it.end(),rnd_gen); // to randomly mask electrodes/channels
         i_pulse = i_cycle * nt_cycle + nt_cycle/Nsites_/2 * jitter_strength * random.doub(); // cycle onset
         for (int ii = 0; ii < Nsites; ii++){
             if (find(mask_it.begin(), mask_it.begin()+nmask, ii) != mask_it.begin()+nmask) continue;
             for (int jj = 0; jj < n_pulses; jj++){ 
-                for (int kk = i_pulse; kk < i_pulse+nte; kk++) Stimulus[ii][kk] = Ae; // the positive peak
-                for (int kk = i_pulse+nte+nt_; kk < i_pulse+nt_lambda; kk++) Stimulus[ii][kk] = Ai; // the negative peak
+                for (int kk = i_pulse; kk < i_pulse+nte; kk++){
+                    if (kk < nt) Stimulus[ii][kk] = Ae; // the positive peak
+                }
+                for (int kk = i_pulse+nte+nt_; kk < i_pulse+nt_lambda; kk++){
+                    if (kk < nt) Stimulus[ii][kk] = Ai; // the negative peak
+                }
                 i_pulse += ceil(8.3/dt);
             }
             i_pulse -= n_pulses * ceil(8.3/dt);
@@ -741,6 +751,9 @@ vector<vector<double> > jRVS_CR(Ran &random,double window_size, double Fs, doubl
     
     vector<double> zeros(nt,0);
     vector<vector<double> > Stimulus(Nsites,zeros);
+    
+    random_device rd;
+    mt19937 rnd_gen(rd());
 
     n_cycles = Fs*window_size/1e3; // because window_size is in ms
     i_cycle = 0;
@@ -748,14 +761,18 @@ vector<vector<double> > jRVS_CR(Ran &random,double window_size, double Fs, doubl
     vector<int> mask_it(Nsites,0);
     for (int ii = 0; ii < Nsites; ii++) pulse_order[ii] = ii;
 
-    while (i_cycle < n_cycles-1){
-        shuffle(pulse_order.begin(),pulse_order.end(),default_random_engine(0)); // for both channel/electrode masking and randomization of order of stimulation
+    while (i_cycle < n_cycles){
+        shuffle(pulse_order.begin(),pulse_order.end(),rnd_gen); // for both channel/electrode masking and randomization of order of stimulation
         i_pulse = i_cycle * nt_cycle + nt_cycle/Nsites_/2 * jitter_strength * random.doub(); // cycle onset
         for (int ii = nmask; ii < Nsites; ii++){
             ii_ = pulse_order[ii];
             for (int jj = 0; jj < n_pulses; jj++){ 
-                for (int kk = i_pulse; kk < i_pulse+nte; kk++) Stimulus[ii_][kk] = Ae; // the positive peak
-                for (int kk = i_pulse+nte+nt_; kk < i_pulse+nt_lambda; kk++) Stimulus[ii_][kk] = Ai; // the negative peak
+                for (int kk = i_pulse; kk < i_pulse+nte; kk++) {
+                    if (kk < nt) Stimulus[ii_][kk] = Ae;
+                }
+                for (int kk = i_pulse+nte+nt_; kk < i_pulse+nt_lambda; kk++) {
+                    if (kk < nt) Stimulus[ii_][kk] = Ai;
+                }
                 i_pulse += ceil(8.3/dt);
             }
             i_pulse -= n_pulses * ceil(8.3/dt);
